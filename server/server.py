@@ -2,6 +2,7 @@ from flask import Flask
 from flask import request
 import json
 from enum import Enum
+from threading import Thread
 app = Flask(__name__)
 
 class SystemState(Enum):
@@ -42,8 +43,13 @@ class myHouse():
       for v in self.myData["devices"]:
         if v["devName"] == newDevice["devName"]: return
       self.myData["devices"].append(newDevice)
+
+  def getModules(self):
+    return self.myData["modules"]
+
+  def getDevices(self):
+    return self.myData["devices"]
     
-      
 
 @app.route("/")
 def test():
@@ -71,6 +77,30 @@ def addDevice():
   myIstance.addNewDevice(newDevice)
   return myIstance.getData()
 
+def systemThreadTask():
+  while True:
+    print("Current State = "+currentState)
+    if myIstance.getData["sensors"]["lux"]<1: currentState = SystemState.IDLE  
+    if myIstance.getData["sensors"]["tmp"]>5: currentState = SystemState.ERROR
+
+    if currentState == SystemState.WORKING:
+      workingMethod()
+    elif currentState == SystemState.IDLE:
+      idleMethod()
+    elif currentState == SystemState.ERROR:
+      errorMethod()
+
+def workingMethod(): 
+  print("") 
+
+def idleMethod():
+  print("")
+
+def errorMethod():
+  print("")
+  
 if __name__ == "__main__":
-  myIstance= myHouse()
+  myIstance = myHouse()
   app.run(host="0.0.0.0", port=80, debug=True, use_reloader=False)
+  myThread = Thread(target = systemThreadTask, args =[])
+
