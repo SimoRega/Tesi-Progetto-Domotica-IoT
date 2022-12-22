@@ -18,7 +18,7 @@ def mergeDictionaries(x, y):
 
 class myHouse():
   def __init__(self) -> None:
-     self.myData = dict(generalState=0, sensors=dict(lux=0,hum=0,tmp=0), modules=[])
+     self.myData = dict(generalState=0, sensors=dict(lux=0,hum=0,tmp=0), modules=[], devices=[])
     
   def changeState(self, newState):
     self.myData["GeneralState"]=newState
@@ -36,6 +36,12 @@ class myHouse():
       for v in self.myData["modules"]:
         if v["modName"] == newModule["modName"]: return
       self.myData["modules"].append(newModule)
+
+  def addNewDevice(self,newDevice):
+    if newDevice!= None : 
+      for v in self.myData["devices"]:
+        if v["devName"] == newDevice["devName"]: return
+      self.myData["devices"].append(newDevice)
     
       
 
@@ -58,6 +64,12 @@ def addModule():
   myIstance.addNewModule(newModule)
   return myIstance.getData()
 
+@app.route("/addDevice")
+def addDevice():
+  newDevice=dict(devName=request.args.get("devName"),
+                    devState=request.args.get("devState"))
+  myIstance.addNewDevice(newDevice)
+  return myIstance.getData()
 
 if __name__ == "__main__":
   myIstance= myHouse()
