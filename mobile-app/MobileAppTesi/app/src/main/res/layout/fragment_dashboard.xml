@@ -9,7 +9,7 @@
     <ImageView
         android:layout_width="859dp"
         android:layout_height="628dp"
-        android:layout_marginBottom="212dp"
+        android:layout_marginBottom="236dp"
         android:src="@drawable/dashboard_digitaltwin"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -98,6 +98,7 @@
     </com.google.android.material.card.MaterialCardView>
 
     <com.google.android.material.card.MaterialCardView
+        android:id="@+id/materialCardView"
         android:layout_width="100dp"
         android:layout_height="100dp"
         android:layout_marginBottom="380dp"
@@ -110,6 +111,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:strokeColor="@android:color/holo_red_light"
         app:strokeWidth="3dp">
+
         <ImageView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
@@ -117,6 +119,31 @@
             android:src="@drawable/bulb_off"
             tools:layout_editor_absoluteX="47dp"
             tools:layout_editor_absoluteY="424dp" />
+    </com.google.android.material.card.MaterialCardView>
+
+    <com.google.android.material.card.MaterialCardView
+        android:layout_width="match_parent"
+        android:layout_height="326dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="1.0"
+        app:cardBackgroundColor="#FFFFFF"
+        app:cardCornerRadius="20dp"
+        app:cardElevation="2dp">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:layout_marginStart="20dp"
+            android:text="Dati casa"/>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rvDashboard"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_margin="30dp"/>
     </com.google.android.material.card.MaterialCardView>
 
 
