@@ -1,38 +1,43 @@
 package com.example.mobileapptesi;
 
+import android.content.Context;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
 import com.example.mobileapptesi.databinding.ActivityMainBinding;
+import com.loopj.android.http.RequestParams;
 
-import java.util.Observer;
-import java.util.concurrent.Executor;
+import java.io.UnsupportedEncodingException;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
-import static java.util.concurrent.TimeUnit.*;
 
+import org.apache.http.Header;
+import org.apache.http.entity.StringEntity;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements AsyncCallBack{
 
     private ActivityMainBinding binding;
+    private Context ctx = null;
+    private TextView hum=null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        ctx=this;
         CommHandler ch = new CommHandler();
         ScheduledExecutorService executorService = Executors.newScheduledThreadPool(1);
         executorService.scheduleAtFixedRate(ch, 0, 3, TimeUnit.SECONDS);
@@ -52,14 +57,35 @@ public class MainActivity extends AppCompatActivity {
         NavigationUI.setupWithNavController(binding.navView, navController);
 
 
-        TextView hum = findViewById(R.id.txtHum);
+        hum = findViewById(R.id.txtHum);
+        Button btnOn = findViewById(R.id.btnTurnOn);
+        Button btnOff = findViewById(R.id.btnTurnOff);
+
+        btnOn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                new PostAsyncTask().setInstance(MainActivity.this,null).execute("{ \n" +
+                        "    \"deviceid\": \"\", \n" +
+                        "    \"data\": {\n" +
+                        "        \"switch\": \"on\" \n" +
+                        "    } \n" +
+                        " }");
+
+            }
+        });
+        /*
         try {
 
             hum.setText("Hum: "+(ch.getJson().getJSONObject("sensors").get("hum")==null?"":ch.getJson().getJSONObject("sensors").get("hum")));
         } catch (JSONException e) {
             e.printStackTrace();
         }
+        */
     }
 
 
+    @Override
+    public void setResult(String result) {
+        hum.setText(result);
+    }
 }

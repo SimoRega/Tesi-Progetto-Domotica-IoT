@@ -122,39 +122,54 @@
     </com.google.android.material.card.MaterialCardView>
 
     <com.google.android.material.card.MaterialCardView
-        android:layout_width="match_parent"
-        android:layout_height="326dp"
+        android:layout_width="378dp"
+        android:layout_height="343dp"
+        android:layout_marginStart="16dp"
+        app:cardBackgroundColor="#FFFFFF"
+        app:cardCornerRadius="20dp"
+        app:cardElevation="20dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="1.0"
-        app:cardBackgroundColor="#FFFFFF"
-        app:cardCornerRadius="20dp"
-        app:cardElevation="2dp">
+        app:layout_constraintVertical_bias="0.997">
 
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:layout_margin="10dp">
+            android:layout_margin="10dp"
+            android:orientation="vertical">
 
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/txtTmp"
-            android:text="Tmp"/>
+            <TextView
+                android:id="@+id/txtTmp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Tmp" />
 
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/txtLux"
-            android:text="Lux"/>
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/txtHum"
-            android:text="Hum"/>
+            <TextView
+                android:id="@+id/txtLux"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Lux" />
+
+            <TextView
+                android:id="@+id/txtHum"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Hum" />
+
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Turn On"
+                android:id="@+id/btnTurnOn"/>
+
+            <Button
+                android:id="@+id/btnTurnOff"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Turn Off" />
         </LinearLayout>
+
 
     </com.google.android.material.card.MaterialCardView>
 
