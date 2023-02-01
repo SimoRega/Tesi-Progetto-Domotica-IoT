@@ -4,6 +4,9 @@ import json
 from enum import Enum
 import threading 
 import datetime
+import requests
+import time
+import ast
 
 app = Flask(__name__)
 
@@ -143,14 +146,21 @@ def sendData():
 
 def systemThreadTask():
   while True:
-    #print("Current State = "+ str(SystemState(myIstance.getData()["generalState"])))
-    
+    print("Current State = "+ str(SystemState(myIstance.getData()["generalState"])))
+
+    payload={"cmnd":"Status"}
+
+    data=requests.post("http://192.168.1.105/cm",params=payload).json()
+    print(data)
+    time.sleep(5)
+    '''
     if myIstance.getData()["generalState"] == SystemState.WORKING.value:
       workingMethod()
     elif myIstance.getData()["generalState"] == SystemState.IDLE.value:
       idleMethod()
     elif myIstance.getData()["generalState"] == SystemState.ERROR.value:
       errorMethod()
+    '''
 
 def workingMethod(): 
   global errorFlag
