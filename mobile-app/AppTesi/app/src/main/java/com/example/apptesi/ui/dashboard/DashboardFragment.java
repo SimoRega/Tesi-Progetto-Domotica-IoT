@@ -31,6 +31,7 @@ public class DashboardFragment extends Fragment {
     private Button btnToggle;
     private ListView lstViewDevices;
     private DataSingleton ds = DataSingleton.getInstance();
+    private boolean isOn = false;
 
     @Override
     public void onResume() {
@@ -55,7 +56,16 @@ public class DashboardFragment extends Fragment {
             public void onClick(View v) {
                 for (Map.Entry<String, String> e :
                         ds.getDevices().entrySet()) {
-                    new Thread(new CustomHttpRequest("http://"+e.getValue()+"/?m=1&o=1")).start();
+                    if(e.getKey().contains("tasmota")){
+                        new Thread(new CustomHttpRequest("http://"+e.getValue()+"/?m=1&o=1",false)).start();
+                    }else{
+                        if(isOn){
+                            new Thread(new CustomHttpRequest("http://192.168.1.138:8081/zeroconf/switch","{\"deviceid\": \"\",\"data\": {\"switch\": \"off\"} }")).start();
+                        }else{
+                            new Thread(new CustomHttpRequest("http://192.168.1.138:8081/zeroconf/switch","{\"deviceid\": \"\",\"data\": {\"switch\": \"on\"} }")).start();
+                        }
+                        isOn=!isOn;
+                    }
                 }
             }
         });

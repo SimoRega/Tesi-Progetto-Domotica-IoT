@@ -3,7 +3,6 @@ package com.example.apptesi;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.widget.ArrayAdapter;
-import android.widget.Toast;
 
 import java.io.IOException;
 import java.net.InetAddress;
@@ -12,16 +11,12 @@ import java.util.ArrayList;
 
 public class ScanIpTask extends AsyncTask<Void, String, Void> {
 
-    /*
-    Scan IP 192.168.1.100~192.168.1.110
-    you should try different timeout for your network/devices
-    */
     private ArrayList<String> ipList;
     private ArrayAdapter<String> adapter;
     static final String subnet = "192.168.1.";
-    static final int lower = 100;
-    static final int upper = 110;
-    static final int timeout = 5000;
+    static final int lower = 2;
+    static final int upper = 254;
+    static final int timeout = 100;
     private Context ctx=null;
 
     public ScanIpTask(Context ctx, ArrayList<String> ipList,ArrayAdapter<String> adapter){
@@ -34,7 +29,6 @@ public class ScanIpTask extends AsyncTask<Void, String, Void> {
     protected void onPreExecute() {
         ipList.clear();
         adapter.notifyDataSetInvalidated();
-        Toast.makeText(ctx, "Scan IP...", Toast.LENGTH_LONG).show();
     }
 
     @Override
@@ -47,7 +41,7 @@ public class ScanIpTask extends AsyncTask<Void, String, Void> {
                 InetAddress inetAddress = InetAddress.getByName(host);
                 if (inetAddress.isReachable(timeout)){
                     publishProgress(InetAddress.getByName(host).getHostName()+
-                            " "+inetAddress.toString());
+                            " "+ inetAddress);
                 }
 
             } catch (UnknownHostException e) {
@@ -64,11 +58,9 @@ public class ScanIpTask extends AsyncTask<Void, String, Void> {
     protected void onProgressUpdate(String... values) {
         ipList.add(values[0]);
         adapter.notifyDataSetInvalidated();
-        //Toast.makeText(ctx, values[0], Toast.LENGTH_LONG).show();
     }
 
     @Override
     protected void onPostExecute(Void aVoid) {
-        //Toast.makeText(ctx, "Done", Toast.LENGTH_LONG).show();
     }
 }

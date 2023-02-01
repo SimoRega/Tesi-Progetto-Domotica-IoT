@@ -19,10 +19,16 @@
         android:usesCleartextTraffic="true"
         tools:targetApi="33">
         <activity
+            android:name=".DeviceActivity"
+            android:exported="false">
+            <meta-data
+                android:name="android.app.lib_name"
+                android:value="" />
+        </activity>
+        <activity
             android:name=".SearchDeviceActivity"
             android:exported="false"
-            android:theme="@style/TransparentActivityTheme"
-            >
+            android:theme="@style/TransparentActivityTheme">
             <meta-data
                 android:name="android.app.lib_name"
                 android:value="" />

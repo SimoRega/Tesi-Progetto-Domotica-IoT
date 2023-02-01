@@ -63,7 +63,8 @@ public class DataSingleton {
     synchronized public static List<String> getDevicesAsList(){
         List<String> dev = new ArrayList<>();
         for(Map.Entry<String,String> e : devices.entrySet()){
-            dev.add(e.getKey()+" : "+e.getValue());
+            //dev.add(e.getKey()+" : "+e.getValue());
+            dev.add((e.getKey().split(".home"))[0]);
         }
         return dev;
     }

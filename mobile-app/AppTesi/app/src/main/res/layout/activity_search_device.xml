@@ -12,33 +12,48 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:cardCornerRadius="25dp"
-        android:layout_margin="2dp"
-        android:backgroundTint="#EEE"
+
+        android:layout_margin="20dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        android:elevation="10dp"
+        android:elevation="100dp"
+        app:cardElevation="20dp"
         app:layout_constraintTop_toTopOf="parent">
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical"
-            android:gravity="center">
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:gravity="center">
 
-        <ListView
-            android:id="@+id/lstViewIP"
-            android:layout_width="284dp"
-            android:layout_height="529dp"
- />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Scan IP"
+                android:layout_marginVertical="5dp"
+                android:textSize="20sp"/>
+            <ListView
+                android:id="@+id/lstViewIP"
+                android:layout_width="284dp"
+                android:layout_height="529dp"
+                android:layout_margin="10dp"
+            />
 
-        <Button
-            android:id="@+id/scan"
-            android:layout_width="229dp"
-            android:layout_height="43dp"
-            android:text="Scan"
-            android:backgroundTint="#000"
-            android:textColor="#FFF"
- />
+            <Button
+                android:id="@+id/scan"
+                android:layout_width="250dp"
+                android:layout_height="wrap_content"
+                android:text="Scan"
+                android:backgroundTint="#000"
+                android:textColor="#FFF"
+            />
+            <Button
+                android:layout_width="250dp"
+                android:layout_height="wrap_content"
+                android:id="@+id/btnAddDevice"
+                android:text="Add Device"
+                android:backgroundTint="#000"
+                android:textColor="#FFF"/>
         </LinearLayout>
 
 

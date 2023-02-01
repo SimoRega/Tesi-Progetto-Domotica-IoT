@@ -2,58 +2,81 @@ package com.example.apptesi;
 
 import android.app.Activity;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
+import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
+import okhttp3.RequestBody;
 import okhttp3.Response;
 
 public class CustomHttpRequest implements Runnable{
-    final OkHttpClient client = new OkHttpClient();
+    private OkHttpClient client;
     private String url="";
     private List<String> params=null;
     private boolean isStatusInfo = false;
-    private DataSingleton ds = null;
-    private boolean isServer=false;
+    private DataSingleton ds = DataSingleton.getInstance();
     private Activity act;
 
-    public CustomHttpRequest(String url, List<String> params,Activity act){
-        this.url=url;
-        this.act=act;
-        this.params=params;
-        ds=DataSingleton.getInstance();
-        if(params.contains("cm?cmnd=Status") && params.size()==1){
-            isStatusInfo = true;
-        }else if(params.contains("appMeasure")){
-            isServer=true;
-        }else{
-            this.url+='?';
-        }
+    private boolean toServer = false;
+    private String body = "{}";
+    private boolean isPlug = false;
+
+    public CustomHttpRequest(String url, boolean toServer){
+        client = new OkHttpClient().newBuilder()
+                .connectTimeout(60, TimeUnit.SECONDS)
+                .readTimeout(60, TimeUnit.SECONDS)
+                .writeTimeout(60, TimeUnit.SECONDS)
+                .build();
+        this.url = url;
+        this.isPlug = isPlug;
+        this.toServer=toServer;
     }
-    public CustomHttpRequest(String url){
-        this.url=url;
-        ds=DataSingleton.getInstance();
-
-        isServer=true;
-
+    public CustomHttpRequest(String url, String body){
+        client = new OkHttpClient().newBuilder()
+                .connectTimeout(60, TimeUnit.SECONDS)
+                .readTimeout(60, TimeUnit.SECONDS)
+                .writeTimeout(60, TimeUnit.SECONDS)
+                .build();
+        this.url = url;
+        this.body = body;
     }
 
     @Override
     public void run() {
-        if(!isServer){
-            for(Map.Entry e : ds.getDevices().entrySet()){
-                request("http://"+(String)e.getValue()+"/?");
-            }
-        }else{
-            try {
+        try {
+            if(isPlug){
                 client.newCall(new Request.Builder().url(url).build()).execute();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
+            }else{
+                System.out.println(body);
 
+                OkHttpClient client = new OkHttpClient();
+                MediaType mediaType = MediaType.parse("application/json");
+                RequestBody requestBody = RequestBody.create(mediaType, body) ;
+                Request request = new Request.Builder()
+                        .url(url)
+                        .post(requestBody)
+                        .build();
+
+                try (Response response = client.newCall(request).execute()) {
+                    if (!response.isSuccessful()) {
+                        throw new IOException("Unexpected code " + response);
+                    }
+                    System.out.println(response);
+                } catch (IOException e) {
+                    // Handle the exception
+                }
+            }
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     private void request(String dictUrl){
