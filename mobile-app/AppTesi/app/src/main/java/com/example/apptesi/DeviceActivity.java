@@ -5,14 +5,22 @@ import androidx.lifecycle.ViewModelProvider;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
 import com.example.apptesi.ui.notifications.NotificationsViewModel;
+import com.github.mikephil.charting.charts.LineChart;
+import com.github.mikephil.charting.data.Entry;
+import com.github.mikephil.charting.data.LineData;
+import com.github.mikephil.charting.data.LineDataSet;
+import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
 
 import org.w3c.dom.Text;
+
+import java.util.ArrayList;
 
 public class DeviceActivity extends AppCompatActivity {
 
@@ -29,6 +37,8 @@ public class DeviceActivity extends AppCompatActivity {
     private SmartDevice smartDevice;
     private DataSingleton ds= DataSingleton.getInstance();
     private SmartDeviceViewModel smartDeviceViewModel;
+
+    private LineChart mchart;
 
 
     @Override
@@ -48,6 +58,34 @@ public class DeviceActivity extends AppCompatActivity {
                 new ViewModelProvider(this).get(SmartDeviceViewModel.class);
         smartDeviceViewModel.setInstance(smartDevice);
         smartDeviceViewModel.getStateText().observe(this, txtState::setText);
+
+        mchart= findViewById(R.id.graficoProva);
+
+        mchart.setDragEnabled(true);
+        mchart.setScaleEnabled(false);
+
+        ArrayList<Entry> y = new ArrayList<>();
+        y.add(new Entry(0,60f));
+        y.add(new Entry(1,50f));
+        y.add(new Entry(2,70));
+        y.add(new Entry(3,30f));
+        y.add(new Entry(4,50f));
+        y.add(new Entry(5,60f));
+        y.add(new Entry(6,65f));
+
+        LineDataSet set1 = new LineDataSet(y,"Dataset 1");
+        set1.setFillAlpha(110);
+
+        set1.setColor(Color.RED);
+        set1.setLineWidth(3f);
+        set1.setValueTextSize(10f);
+        set1.setValueTextColor(Color.GREEN);
+
+        ArrayList<ILineDataSet> dataSets = new ArrayList<>();
+        dataSets.add(set1);
+
+        LineData data = new LineData(dataSets);
+        mchart.setData(data);
 
 
     }

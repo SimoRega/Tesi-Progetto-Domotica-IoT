@@ -56,6 +56,10 @@
         android:id="@+id/btnCommandDevice"
         android:layout_gravity="center"/>
 
-    <
+    <com.github.mikephil.charting.charts.LineChart
+        android:id="@+id/graficoProva"
+        android:layout_width="200dp"
+        android:layout_height="200dp"/>
+
 
 </LinearLayout>
