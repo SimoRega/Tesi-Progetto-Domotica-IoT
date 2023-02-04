@@ -16,7 +16,7 @@ public class ScanIpTask extends AsyncTask<Void, String, Void> {
     static final String subnet = "192.168.1.";
     static final int lower = 2;
     static final int upper = 254;
-    static final int timeout = 100;
+    static final int timeout = 200;
     private Context ctx=null;
 
     public ScanIpTask(Context ctx, ArrayList<String> ipList,ArrayAdapter<String> adapter){
@@ -40,8 +40,9 @@ public class ScanIpTask extends AsyncTask<Void, String, Void> {
             try {
                 InetAddress inetAddress = InetAddress.getByName(host);
                 if (inetAddress.isReachable(timeout)){
-                    publishProgress(InetAddress.getByName(host).getHostName()+
-                            " "+ inetAddress);
+                    String tmps=InetAddress.getByName(host).getHostName();
+                    publishProgress(tmps.split(".homenet")[0]+
+                            "\n "+ inetAddress);
                 }
 
             } catch (UnknownHostException e) {

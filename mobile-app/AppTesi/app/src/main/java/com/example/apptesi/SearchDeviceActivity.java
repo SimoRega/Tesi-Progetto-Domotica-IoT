@@ -53,9 +53,11 @@ public class SearchDeviceActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 for(String tmpS : tmpSelected){
-                    String spl[]=tmpS.split(" /");
+                    String spl[]=tmpS.split("\n /");
                     System.out.println("ADDED: "+tmpS);
                     ds.addDevice(spl[0],spl[1]);
+                    //TODO
+                    ds.addSmartDevice(new SmartDevice(spl[0],spl[1],""));
                 }
                 System.out.println(ds.getDevices());
                 finish();

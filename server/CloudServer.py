@@ -52,7 +52,7 @@ def tmpMeasure():
 
 def energyStatusRequest():
     payload={"cmnd":"Status 8"}
-    energy=requests.post("http://192.168.1.105/cm",params=payload).json()["StatusSNS"]["ENERGY"]
+    energy=requests.post("http://192.168.1.10/cm",params=payload).json()["StatusSNS"]["ENERGY"]
     myHouseIstance.addPowerMeasure(energy)
     return energy
 
@@ -61,7 +61,7 @@ def periodicalPowerMeasure():
         energyData=energyStatusRequest()
         
         print(energyData)
-        time.sleep(60)
+        time.sleep(5)
    
 
   

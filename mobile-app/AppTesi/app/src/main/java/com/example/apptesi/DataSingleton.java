@@ -17,6 +17,7 @@ public class DataSingleton {
     private static String lastState="";
     private static List<String> data=new ArrayList<>();
     private static Map<String,String> devices = new HashMap<>();
+    private static List<SmartDevice> smartDevices = new ArrayList<>();
 
     private DataSingleton(){}
 
@@ -55,6 +56,20 @@ public class DataSingleton {
 
     synchronized public static void addDevice(String name, String ip){
         devices.put(name,ip);
+    }
+
+    synchronized public static void addSmartDevice(SmartDevice sd){
+        smartDevices.add(sd);
+    }
+
+    synchronized public static List<SmartDevice> getSmartDevices(){ return smartDevices; }
+
+    synchronized public static SmartDevice getSmartDevice(String name){
+        for(SmartDevice s : smartDevices){
+            if(s.getName().equals(name))
+                return s;
+        }
+        return null;
     }
 
     synchronized public static Map<String,String> getDevices(){

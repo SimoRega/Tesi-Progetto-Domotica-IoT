@@ -17,8 +17,10 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.example.apptesi.CustomHttpRequest;
 import com.example.apptesi.DataSingleton;
+import com.example.apptesi.HttpRequestType;
 import com.example.apptesi.R;
 import com.example.apptesi.SearchDeviceActivity;
+import com.example.apptesi.SmartDevice;
 import com.example.apptesi.databinding.FragmentDashboardBinding;
 
 import java.util.Map;
@@ -54,18 +56,9 @@ public class DashboardFragment extends Fragment {
         btnToggle.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                for (Map.Entry<String, String> e :
-                        ds.getDevices().entrySet()) {
-                    if(e.getKey().contains("tasmota")){
-                        new Thread(new CustomHttpRequest("http://"+e.getValue()+"/?m=1&o=1",false)).start();
-                    }else{
-                        if(isOn){
-                            new Thread(new CustomHttpRequest("http://192.168.1.138:8081/zeroconf/switch","{\"deviceid\": \"\",\"data\": {\"switch\": \"off\"} }")).start();
-                        }else{
-                            new Thread(new CustomHttpRequest("http://192.168.1.138:8081/zeroconf/switch","{\"deviceid\": \"\",\"data\": {\"switch\": \"on\"} }")).start();
-                        }
-                        isOn=!isOn;
-                    }
+                for (SmartDevice sd :
+                        ds.getSmartDevices()) {
+                    new CustomHttpRequest(sd).makeHttpRequest(HttpRequestType.STATE);
                 }
             }
         });
