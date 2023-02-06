@@ -14,14 +14,12 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.apptesi.DataSingleton;
-import com.example.apptesi.DeviceActivity;
+import com.example.apptesi.device.DeviceActivity;
 import com.example.apptesi.R;
 import com.example.apptesi.databinding.FragmentHomeBinding;
-import com.example.apptesi.CustomRVIListener;
-import com.example.apptesi.DevicesRVAdapter;
+import com.example.apptesi.device.CustomRVIListener;
+import com.example.apptesi.device.DevicesRVAdapter;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 
 public class HomeFragment extends Fragment {

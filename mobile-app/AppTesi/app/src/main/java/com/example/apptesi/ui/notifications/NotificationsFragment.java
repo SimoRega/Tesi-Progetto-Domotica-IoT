@@ -15,7 +15,7 @@ import com.example.apptesi.CustomHttpRequest;
 import com.example.apptesi.DataSingleton;
 import com.example.apptesi.HttpRequestType;
 import com.example.apptesi.R;
-import com.example.apptesi.SmartDevice;
+import com.example.apptesi.device.SmartDevice;
 import com.example.apptesi.databinding.FragmentNotificationsBinding;
 
 public class NotificationsFragment extends Fragment {

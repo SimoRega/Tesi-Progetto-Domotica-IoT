@@ -5,61 +5,118 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context=".DeviceActivity">
+    tools:context=".device.DeviceActivity"
+    >
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginHorizontal="10dp"
+        android:layout_marginTop="20dp"
+        >
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_gravity="center"
+            android:layout_height="wrap_content"
+            android:text=""
+            android:id="@+id/txtLabelDevice"
+            android:layout_weight="1"
+            android:textSize="20dp"
+            android:textAppearance="@style/Widget.AppCompat.Spinner.Underlined"/>
+        <Button
+            android:layout_width="50dp"
+            android:layout_height="wrap_content"
+            android:id="@+id/btnChgLblDevice"
+            app:icon="@drawable/baseline_mode_24"
+            android:layout_gravity="center"
+            style="@style/Widget.MaterialComponents.Button.Icon"
+            />
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_gravity="center"
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text=""
-        android:id="@+id/txtNameDevice"/>
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_gravity="center"
-        android:layout_height="wrap_content"
-        android:text=""
-        android:id="@+id/txtIpDevice"/>
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_gravity="center"
-        android:layout_height="wrap_content"
-        android:text=""
-        android:id="@+id/txtLabelDevice"/>
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Change Label"
-        android:id="@+id/btnChgLblDevice"
-        android:layout_gravity="center"/>
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_gravity="center"
-        android:layout_height="wrap_content"
-        android:text=""
-        android:id="@+id/txtStateDevice"/>
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="INFO"
-        android:id="@+id/btnInfoDevice"
-        android:layout_gravity="center"/>
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="TOGGLE"
-        android:id="@+id/btnToggleDevice"
-        android:layout_gravity="center"/>
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="CMND"
-        android:id="@+id/btnCommandDevice"
-        android:layout_gravity="center"/>
+        android:orientation="horizontal"
+        android:padding="2dp"
+        android:layout_marginHorizontal="10dp"
+        android:layout_marginBottom="20dp"
+        >
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_gravity="center"
+            android:layout_height="wrap_content"
+            android:textSize="20dp"
+            android:textAppearance="@style/Widget.AppCompat.Spinner.Underlined"
+            android:layout_weight="1"
+            android:id="@+id/txtNameDevice"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text=""
+            android:id="@+id/txtIpDevice"
+            android:layout_gravity="center"
+            android:layout_weight="1"
+            android:gravity="left"
+            android:layout_marginHorizontal="10dp"
+            />
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_gravity="center"
+            android:orientation="horizontal"
+            android:gravity="center"
+            >
+
+            <ImageView
+                android:id="@+id/imgStateDevice"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/on_dot" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_gravity="center"
+                android:layout_height="wrap_content"
+                android:text="ON"
+                android:id="@+id/txtStateDevice" />
+        </LinearLayout>
+    </LinearLayout>
 
     <com.github.mikephil.charting.charts.LineChart
         android:id="@+id/graficoProva"
-        android:layout_width="200dp"
-        android:layout_height="200dp"/>
+        android:layout_width="match_parent"
+        android:layout_height="300dp"
+        android:layout_marginHorizontal="10dp"
+        android:layout_weight="4"/>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:layout_weight="2"
+        >
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="INFO"
+            android:id="@+id/btnInfoDevice"
+            android:layout_gravity="center"/>
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="TOGGLE"
+            android:id="@+id/btnToggleDevice"
+            android:layout_gravity="center"/>
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="MEASURE"
+            android:id="@+id/btnMeasureDevice"
+            android:layout_gravity="center"/>
+
+    </LinearLayout>
 
 
 </LinearLayout>

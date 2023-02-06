@@ -1,4 +1,4 @@
-package com.example.apptesi;
+package com.example.apptesi.device;
 
 public class SmartDevice {
 

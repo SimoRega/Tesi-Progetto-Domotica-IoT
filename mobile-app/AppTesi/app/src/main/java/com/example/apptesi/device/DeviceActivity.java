@@ -1,25 +1,21 @@
-package com.example.apptesi.ui.dashboard;
+package com.example.apptesi.device;
 
-import android.content.Intent;
-import android.os.Bundle;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
-import android.widget.Button;
-import android.widget.ListView;
-
-import androidx.annotation.NonNull;
-import androidx.fragment.app.Fragment;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
+
+import android.app.Activity;
+import android.content.Intent;
+import android.graphics.Color;
+import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.example.apptesi.CustomHttpRequest;
 import com.example.apptesi.DataSingleton;
 import com.example.apptesi.HttpRequestType;
 import com.example.apptesi.R;
-import com.example.apptesi.SearchDeviceActivity;
-import com.example.apptesi.device.SmartDevice;
-import com.example.apptesi.databinding.FragmentDashboardBinding;
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.components.AxisBase;
 import com.github.mikephil.charting.components.XAxis;
@@ -39,49 +35,47 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
-public class DashboardFragment extends Fragment {
+public class DeviceActivity extends AppCompatActivity {
 
-    private FragmentDashboardBinding binding;
-    private View view=null;
-    private Button btnScan;
+    private TextView txtName;
+    private TextView txtState;
+    private TextView txtIp;
+    private TextView txtLabel;
+    private ImageView imgState;
+    private Button btnInfo;
+    private Button btnCmnd;
     private Button btnToggle;
-    private ListView lstViewDevices;
-    private DataSingleton ds = DataSingleton.getInstance();
-    private boolean isOn = false;
+    private Button btnChgLabel;
+    private Activity act;
+
+    private SmartDevice smartDevice;
+    private DataSingleton ds= DataSingleton.getInstance();
+    private SmartDeviceViewModel smartDeviceViewModel;
+
+    private LineChart mchart;
+
 
     @Override
-    public void onResume() {
-        super.onResume();
-        DashboardViewModel dashboardViewModel =
-                new ViewModelProvider(this).get(DashboardViewModel.class);
-        dashboardViewModel.getDevices().observe(getViewLifecycleOwner(),dev->{
-            lstViewDevices.setAdapter(new ArrayAdapter<String>(getContext(), android.R.layout.simple_list_item_1, dev));
-        });
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_device);
 
-        btnScan.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent myIntent = new Intent(getContext(), SearchDeviceActivity.class);
-                //myIntent.putExtra("key", "value"); //Optional parameters
-                startActivity(myIntent);
-            }
-        });
+        act=this;
 
-        btnToggle.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                for (SmartDevice sd :
-                        ds.getSmartDevices()) {
-                    new CustomHttpRequest(sd).makeHttpRequest(HttpRequestType.STATE);
-                }
-            }
-        });
+        Intent intent = getIntent();
+        String iString = intent.getStringExtra("device");
+        System.out.println("DEVICE: "+iString);
 
-        displayGraph();
-    }
+        smartDevice=ds.getSmartDevice(iString);
+        txtState = findViewById(R.id.txtStateDevice);
+        smartDeviceViewModel =
+                new ViewModelProvider(this).get(SmartDeviceViewModel.class);
+        smartDeviceViewModel.setInstance(smartDevice);
+        smartDeviceViewModel.getStateText().observe(this, txtState::setText);
 
-    private void displayGraph() {
-        LineChart lineChart = view.findViewById(R.id.dashboardChart);
+        mchart= findViewById(R.id.graficoProva);
+
+        LineChart lineChart = findViewById(R.id.graficoProva);
 
         // Disable description text
         lineChart.getDescription().setEnabled(false);
@@ -165,21 +159,54 @@ public class DashboardFragment extends Fragment {
         lineChart.invalidate();
     }
 
-    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-
-        binding = FragmentDashboardBinding.inflate(inflater, container, false);
-        view = binding.getRoot();
-
-        btnScan = view.findViewById(R.id.btnScan);
-        btnToggle = view.findViewById(R.id.btnToggle);
-        lstViewDevices = view.findViewById(R.id.lstViewDevices);
-
-        return view;
-    }
-
     @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-        binding = null;
+    protected void onResume() {
+        super.onResume();
+        txtIp = findViewById(R.id.txtIpDevice);
+        txtName = findViewById(R.id.txtNameDevice);
+        txtLabel = findViewById(R.id.txtLabelDevice);
+
+        btnCmnd = findViewById(R.id.btnMeasureDevice);
+        btnInfo = findViewById(R.id.btnInfoDevice);
+        btnToggle = findViewById(R.id.btnToggleDevice);
+        btnChgLabel = findViewById(R.id.btnChgLblDevice);
+
+        imgState = findViewById(R.id.imgStateDevice);
+        imgState.setImageResource(smartDevice.getState()==true? R.drawable.on_dot:R.drawable.off_dot);
+
+        txtName.setText(smartDevice.getName());
+        txtIp.setText(smartDevice.getIp());
+        txtState.setText(smartDevice.getState()==true?"ON":"OFF");
+        txtLabel.setText(smartDevice.getLabel());
+
+        btnChgLabel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent myIntent = new Intent(act, ChangeLabelActivity.class);
+                myIntent.putExtra("device", smartDevice.getName()); //Optional parameters
+                startActivity(myIntent);
+            }
+        });
+
+        btnToggle.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                new CustomHttpRequest(smartDevice).makeHttpRequest(HttpRequestType.TOGGLE);
+                smartDeviceViewModel.setInstance(smartDevice);
+                smartDeviceViewModel.txtState.postValue(smartDevice.getState() == true ? "ON" : "OFF");
+                imgState.setImageResource(smartDevice.getState()==true? R.drawable.on_dot:R.drawable.off_dot);
+            }
+        });
+
+        btnInfo.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                new CustomHttpRequest(smartDevice).makeHttpRequest(HttpRequestType.STATE);
+                smartDeviceViewModel.setInstance(smartDevice);
+                smartDeviceViewModel.txtState.postValue(smartDevice.getState() == true ? "ON" : "OFF");
+                imgState.setImageResource(smartDevice.getState()==true? R.drawable.on_dot:R.drawable.off_dot);
+
+            }
+        });
     }
 }

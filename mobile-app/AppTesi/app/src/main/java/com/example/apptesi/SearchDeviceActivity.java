@@ -2,7 +2,6 @@ package com.example.apptesi;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -11,6 +10,11 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
+
+import com.example.apptesi.DataSingleton;
+import com.example.apptesi.R;
+import com.example.apptesi.ScanIpTask;
+import com.example.apptesi.device.SmartDevice;
 
 import java.util.ArrayList;
 
@@ -24,6 +28,7 @@ public class SearchDeviceActivity extends AppCompatActivity {
     private ArrayList<String> tmpSelected;
     private ArrayList<String> ipList;
     private ArrayAdapter<String> adapter;
+    private ScanIpTask s;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,17 +42,20 @@ public class SearchDeviceActivity extends AppCompatActivity {
 
 
         //Appena entro nella activity
-        ipList = new ArrayList();
-        adapter = new ArrayAdapter<String>(this,
-                android.R.layout.simple_list_item_1, android.R.id.text1, ipList);
-        listViewIp.setAdapter(adapter);
-        ScanIpTask s=new ScanIpTask(ctx,ipList,adapter);
-        s.execute();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
+        ipList = new ArrayList();
+        adapter = new ArrayAdapter<String>(this,
+                android.R.layout.simple_list_item_1, android.R.id.text1, ipList);
+        listViewIp.setAdapter(adapter);
+        adapter.clear();
+        adapter.notifyDataSetInvalidated();
+        s=new ScanIpTask(ctx,ipList,adapter);
+        s.execute();
+
         tmpSelected = new ArrayList<>();
         btnAdd.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -57,7 +65,7 @@ public class SearchDeviceActivity extends AppCompatActivity {
                     System.out.println("ADDED: "+tmpS);
                     ds.addDevice(spl[0],spl[1]);
                     //TODO
-                    ds.addSmartDevice(new SmartDevice(spl[0],spl[1],""));
+                    ds.addSmartDevice(new SmartDevice(spl[0],spl[1],"[No Label]"));
                 }
                 System.out.println(ds.getDevices());
                 finish();
@@ -67,7 +75,10 @@ public class SearchDeviceActivity extends AppCompatActivity {
         btnScan.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ScanIpTask s=new ScanIpTask(ctx,ipList,adapter);
+                adapter.clear();
+                adapter.notifyDataSetInvalidated();
+                s.cancel(true);
+                s=new ScanIpTask(ctx,ipList,adapter);
                 s.execute();
             }
         });
@@ -76,9 +87,30 @@ public class SearchDeviceActivity extends AppCompatActivity {
             public void onItemClick(AdapterView<?> myAdapter, View myView, int position, long mylng) {
                 String s = (String) listViewIp.getItemAtPosition(position).toString();
                 System.out.println("PRESSED: "+s);
-                tmpSelected.add(s);
-                myView.setBackgroundColor(Color.YELLOW);
+                if(tmpSelected.contains(s)){
+                    tmpSelected.remove(s);
+                    myView.setBackgroundColor(Color.WHITE);
+                }else{
+                    tmpSelected.add(s);
+                    myView.setBackgroundColor(getResources().getColor(R.color.teal_200));
+                }
             }
         });
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        adapter.notifyDataSetInvalidated();
+        s.cancel(true);
+        this.finish();
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        adapter.notifyDataSetInvalidated();
+        s.cancel(true);
+        this.finish();
     }
 }

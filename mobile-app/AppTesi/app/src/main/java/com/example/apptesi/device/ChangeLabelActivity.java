@@ -1,4 +1,4 @@
-package com.example.apptesi;
+package com.example.apptesi.device;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -7,6 +7,10 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+
+import com.example.apptesi.DataSingleton;
+import com.example.apptesi.R;
+import com.example.apptesi.device.SmartDevice;
 
 public class ChangeLabelActivity extends AppCompatActivity {
 
@@ -39,7 +43,7 @@ public class ChangeLabelActivity extends AppCompatActivity {
         btnChange.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                smartDevice.setLabel(editText.getText().toString());
+                smartDevice.setLabel("["+editText.getText().toString()+"]");
                 finish();
             }
         });

@@ -19,7 +19,7 @@
         android:usesCleartextTraffic="true"
         tools:targetApi="33">
         <activity
-            android:name=".ChangeLabelActivity"
+            android:name=".device.ChangeLabelActivity"
             android:exported="false"
             android:theme="@style/TransparentActivityTheme">
             <meta-data
@@ -27,7 +27,7 @@
                 android:value="" />
         </activity>
         <activity
-            android:name=".DeviceActivity"
+            android:name=".device.DeviceActivity"
             android:exported="false">
             <meta-data
                 android:name="android.app.lib_name"

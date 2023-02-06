@@ -29,6 +29,7 @@ public class ScanIpTask extends AsyncTask<Void, String, Void> {
     protected void onPreExecute() {
         ipList.clear();
         adapter.notifyDataSetInvalidated();
+        adapter.notifyDataSetChanged();
     }
 
     @Override
@@ -36,7 +37,8 @@ public class ScanIpTask extends AsyncTask<Void, String, Void> {
 
         for (int i = lower; i <= upper; i++) {
             String host = subnet + i;
-
+            if(this.isCancelled())
+                return null;
             try {
                 InetAddress inetAddress = InetAddress.getByName(host);
                 if (inetAddress.isReachable(timeout)){
