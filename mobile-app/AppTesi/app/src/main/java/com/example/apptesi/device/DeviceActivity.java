@@ -52,8 +52,6 @@ public class DeviceActivity extends AppCompatActivity {
     private DataSingleton ds= DataSingleton.getInstance();
     private SmartDeviceViewModel smartDeviceViewModel;
 
-    private LineChart mchart;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -73,9 +71,11 @@ public class DeviceActivity extends AppCompatActivity {
         smartDeviceViewModel.setInstance(smartDevice);
         smartDeviceViewModel.getStateText().observe(this, txtState::setText);
 
-        mchart= findViewById(R.id.graficoProva);
+    }
 
+    private void makeChart(){
         LineChart lineChart = findViewById(R.id.graficoProva);
+
 
         // Disable description text
         lineChart.getDescription().setEnabled(false);
@@ -93,6 +93,7 @@ public class DeviceActivity extends AppCompatActivity {
 
         // Get the data from DataSingleton
         List<JSONObject> measures = ds.getMeasures();
+        System.out.println(measures);
 
         // Add data to the line chart
         List<Entry> entries = new ArrayList<>();
@@ -101,38 +102,34 @@ public class DeviceActivity extends AppCompatActivity {
             float power = 0;
             String totalStartTime ="";
             try {
-                power = (float) measure.getDouble("Power");
-                totalStartTime = measure.getString("TotalStartTime");
+                power = (float) measure.getJSONObject("ENERGY").getDouble("ApparentPower");
+                totalStartTime = measure.getString("Time");
             } catch (JSONException e) {
-                throw new RuntimeException(e);
+                e.printStackTrace();
             }
 
             // Convert the date-time string to a long value in milliseconds
-            DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault());
+            DateFormat inputFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault());
+            DateFormat outputFormat = new SimpleDateFormat("HH:mm:ss", Locale.getDefault());
             try {
-                Date date = df.parse(totalStartTime);
-                long time = date.getTime();
+                Date date = inputFormat.parse(totalStartTime);
+                String onlyTime = outputFormat.format(date);
+                Date onlyTimeDate = outputFormat.parse(onlyTime);
+                long time = onlyTimeDate.getTime();
+                //TODO non va con json da server
                 entries.add(new Entry(time, power));
+                //entries.add(new Entry(i, power));
             } catch (ParseException e) {
                 e.printStackTrace();
             }
         }
         LineDataSet dataSet = new LineDataSet(entries, "Power");
+        System.out.println("DataSet"+dataSet);
         // Customize the line chart appearance
         dataSet.setMode(LineDataSet.Mode.CUBIC_BEZIER); // make the chart curved
         dataSet.setCubicIntensity(0.2f);
         dataSet.setDrawFilled(true); // fill the area underneath the line
-
-        // Create a gradient to fill the area
-        /*int colori[] = {Color.BLUE, Color.GREEN};
-        Shader shader = new LinearGradient(0, 0, 0, lineChart.getHeight(),colori,null, Shader.TileMode.CLAMP);
-        ShapeDrawable shapeDrawable = new ShapeDrawable(new RectShape());
-        shapeDrawable.getPaint().setShader(shader);
-        dataSet.setFillDrawable(shapeDrawable);
-
-         */
         dataSet.setFillColor(getResources().getColor(R.color.teal_200));
-        //dataSet.setFillAlpha(80);
         dataSet.setColor(getResources().getColor(R.color.teal_700));
         dataSet.setLineWidth(3f);
         dataSet.setDrawCircles(false);
@@ -162,6 +159,10 @@ public class DeviceActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
+        System.out.println(ds.getMeasures());
+        if(!ds.getMeasures().isEmpty()){
+            makeChart();
+        }
         txtIp = findViewById(R.id.txtIpDevice);
         txtName = findViewById(R.id.txtNameDevice);
         txtLabel = findViewById(R.id.txtLabelDevice);
@@ -206,6 +207,13 @@ public class DeviceActivity extends AppCompatActivity {
                 smartDeviceViewModel.txtState.postValue(smartDevice.getState() == true ? "ON" : "OFF");
                 imgState.setImageResource(smartDevice.getState()==true? R.drawable.on_dot:R.drawable.off_dot);
 
+            }
+        });
+
+        btnCmnd.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                new CustomHttpRequest("http://192.168.1.58:80/",List.of("energyDevice=",smartDevice.getName())).makeHttpRequest(HttpRequestType.SERVER);
             }
         });
     }

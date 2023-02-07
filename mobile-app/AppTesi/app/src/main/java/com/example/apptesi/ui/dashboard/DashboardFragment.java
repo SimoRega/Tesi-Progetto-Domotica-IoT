@@ -77,7 +77,9 @@ public class DashboardFragment extends Fragment {
             }
         });
 
-        displayGraph();
+        if(!ds.getMeasures().isEmpty()){
+            displayGraph();
+        }
     }
 
     private void displayGraph() {
@@ -110,7 +112,7 @@ public class DashboardFragment extends Fragment {
                 power = (float) measure.getDouble("Power");
                 totalStartTime = measure.getString("TotalStartTime");
             } catch (JSONException e) {
-                throw new RuntimeException(e);
+                e.printStackTrace();
             }
 
             // Convert the date-time string to a long value in milliseconds

@@ -17,6 +17,7 @@ import com.example.apptesi.ScanIpTask;
 import com.example.apptesi.device.SmartDevice;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class SearchDeviceActivity extends AppCompatActivity {
 
@@ -66,6 +67,7 @@ public class SearchDeviceActivity extends AppCompatActivity {
                     ds.addDevice(spl[0],spl[1]);
                     //TODO
                     ds.addSmartDevice(new SmartDevice(spl[0],spl[1],"[No Label]"));
+                    new CustomHttpRequest("http://192.168.1.58:80/", List.of("addDevice?","devName=",spl[0],"&","devIp=",spl[1])).makeHttpRequest(HttpRequestType.SERVER);
                 }
                 System.out.println(ds.getDevices());
                 finish();

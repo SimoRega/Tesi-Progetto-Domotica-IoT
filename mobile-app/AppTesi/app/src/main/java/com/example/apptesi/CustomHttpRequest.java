@@ -1,6 +1,7 @@
 package com.example.apptesi;
 
 import android.app.Activity;
+import android.widget.Toast;
 
 import com.example.apptesi.device.SmartDevice;
 
@@ -24,24 +25,12 @@ public class CustomHttpRequest{
     private boolean isStatusInfo = false;
     private DataSingleton ds = DataSingleton.getInstance();
     private Activity act;
-
-    private boolean toServer = false;
     private String body = "{}";
     private boolean isPlug = false;
 
     private SmartDevice smartDevice;
 
-    public CustomHttpRequest(String url, boolean toServer){
-        client = new OkHttpClient().newBuilder()
-                .connectTimeout(60, TimeUnit.SECONDS)
-                .readTimeout(60, TimeUnit.SECONDS)
-                .writeTimeout(60, TimeUnit.SECONDS)
-                .build();
-        this.url = url;
-        this.isPlug = isPlug;
-        this.toServer=toServer;
-    }
-    public CustomHttpRequest(String url, String body){
+    public CustomHttpRequest(String url,List<String> params){
         client = new OkHttpClient().newBuilder()
                 .connectTimeout(60, TimeUnit.SECONDS)
                 .readTimeout(60, TimeUnit.SECONDS)
@@ -49,6 +38,7 @@ public class CustomHttpRequest{
                 .build();
         this.url = url;
         this.body = body;
+        this.params=params;
     }
 
     public CustomHttpRequest(SmartDevice smartDevice){
@@ -70,50 +60,36 @@ public class CustomHttpRequest{
                 break;
             case COMMAND:
                 break;
+            case SERVER:
+                makeServerRequest();
+                break;
         }
-        /*
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                OkHttpClient client = new OkHttpClient();
-                Request request;
-                if(smartDevice.hasPM()){
-                    request = new Request.Builder().url("http://"+smartDevice.getIp()+"/?m=1&o=1").build();
-                }else{
-                    String body="";
-                    if(smartDevice.isOn())
-                        body="{\"deviceid\": \"\",\"data\": {\"switch\": \"off\"} }";
-                    else
-                        body="{\"deviceid\": \"\",\"data\": {\"switch\": \"on\"} }";
-                    smartDevice.toggle();
-                    MediaType mediaType = MediaType.parse("application/json");
-                    RequestBody requestBody = RequestBody.create(mediaType, body) ;
-                    request = new Request.Builder()
-                            .url("http://"+smartDevice.getIp()+":8081/zeroconf/switch")
-                            .post(requestBody)
-                            .build();
-                }
-                System.out.println("REQUEST: "+request);
-                client.newCall(request).enqueue(new Callback() {
-                    @Override
-                    public void onFailure(Call call, IOException e) {
-                        e.printStackTrace();
-                    }
+    }
 
-                    @Override
-                    public void onResponse(Call call, Response response) throws IOException {
-                        if (response.isSuccessful()) {
-                            // process response
-                            String responseBody = response.body().string();
-                            smartDevice.setResponse(responseBody);
-                            System.out.println(responseBody);
+    private void makeServerRequest() {
+        Thread tmpThread = new Thread(() -> {
+            StringBuilder par = new StringBuilder();
+            for(String tmpS : params){
+                par.append(tmpS);
+            }
+            Request request = new Request.Builder().url(url+par).build();;
+            client.newCall(request).enqueue(new Callback() {
+                @Override
+                public void onFailure(Call call, IOException e) {
+                    e.printStackTrace();
+                }
+
+                @Override
+                public void onResponse(Call call, Response response) throws IOException {
+                    if (response.isSuccessful()) {
+                        if(params.contains("energyDevice=")){
+                            ds.setMeasures(response.body().string());
                         }
                     }
-                });
-            }
-        }).start();
-
-         */
+                }
+            });
+        });
+        tmpThread.start();
     }
 
     private void makeToggleRequest() {

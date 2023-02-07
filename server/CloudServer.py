@@ -36,10 +36,18 @@ def test():
 def getEnergy():
   return myHouseIstance.getPowerMeasures()
 
+@app.route("/energyDevice=<device>")
+def getEnergyDevice(device):
+  devToReturn=""
+  for tmpDev in myHouseIstance.getDevices()["devices"]:
+     if(device == tmpDev["devName"]):
+        devToReturn= tmpDev["energy"]
+        print("Measures {}".format(devToReturn))
+  return devToReturn
+
 @app.route("/addDevice")
 def addDevice():
-    newDev= dict(devName = request.args.get("devName"), devIp = request.args.get("devIp"), 
-                 state = request.args.get("state"), powerMeter = request.args.get("powerMeter"))
+    newDev= dict(devName = request.args.get("devName"), devIp = request.args.get("devIp"), energy=dict(measures=[]))
     myHouseIstance.addDevice(newDev)
     return myHouseIstance.getDevices()
 
@@ -52,16 +60,24 @@ def tmpMeasure():
 
 def energyStatusRequest():
     payload={"cmnd":"Status 8"}
-    energy=requests.post("http://192.168.1.10/cm",params=payload).json()["StatusSNS"]["ENERGY"]
-    myHouseIstance.addPowerMeasure(energy)
-    return energy
+    try:    
+        energy=""
+        for dev in myHouseIstance.getDevices()["devices"]: 
+            #print(f"current device {dev}")
+            if(dev == None or dev ==""):
+               return "{}"
+            energy=requests.post("http://{}/cm".format(dev["devIp"]),params=payload).json()["StatusSNS"]
+            dev["energy"]["measures"].append(energy)
+            myHouseIstance.addPowerMeasure(energy)
+        return energy
+    except requests.exceptions.RequestException as e:
+       print(f"Request failed {e}")
+    return "{}"
 
 def periodicalPowerMeasure():
     while True:
-        energyData=energyStatusRequest()
-        
-        print(energyData)
-        time.sleep(5)
+        print(energyStatusRequest())
+        time.sleep(3)
    
 
   

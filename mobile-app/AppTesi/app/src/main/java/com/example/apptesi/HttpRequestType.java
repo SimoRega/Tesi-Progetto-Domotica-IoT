@@ -4,4 +4,5 @@ public enum HttpRequestType {
     STATE,
     TOGGLE,
     COMMAND,
+    SERVER
 }
