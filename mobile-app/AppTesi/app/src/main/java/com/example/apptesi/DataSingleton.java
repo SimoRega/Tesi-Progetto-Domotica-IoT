@@ -19,21 +19,27 @@ public class DataSingleton {
     private static Map<String,String> devices = new HashMap<>();
     private static List<SmartDevice> smartDevices = new ArrayList<>();
     private static JSONObject energyJSON ;
+    private SmartDevice server = null;
+    private static Map<String,List<JSONObject>> measuresCollection = new HashMap<>();
 
-    private static List<JSONObject> measuresCollection = new ArrayList<>();
+    private static float TOT_POWER=0;
+    private static float AVG_POWER=0;
+    private static float AVG_VOLTAGE=0;
+    private static float AVG_AMPERE=0;
 
 
     private DataSingleton() {
 
     }
-    public void setMeasures(String message) {
-        measuresCollection.clear();
+    public void setMeasures(String devName, String message) {
+        List<JSONObject> tmpList = new ArrayList<>();
         try {
             energyJSON = new JSONObject(message);
             JSONArray measures = energyJSON.getJSONArray("measures");
             for(int i=0; i<measures.length();i++){
-                measuresCollection.add(measures.getJSONObject(i));
+                tmpList.add(measures.getJSONObject(i));
             }
+            measuresCollection.put(devName,tmpList);
         } catch (JSONException e) {
             throw new RuntimeException(e);
         }
@@ -102,9 +108,52 @@ public class DataSingleton {
         return dev;
     }
 
-    public List<JSONObject> getMeasures() {
-        return measuresCollection;
+    public List<JSONObject> getMeasures(SmartDevice smartDevice) {
+        System.out.println("BO"+measuresCollection.get(smartDevice.getName()));
+        return measuresCollection.get(smartDevice.getName());
     }
 
 
+    public static Map<String, List<JSONObject>> getMeasuresCollection() {
+        return measuresCollection;
+    }
+
+    public SmartDevice getServer(){
+        return this.server;
+    }
+    public void setServer(SmartDevice s){
+        this.server=s;
+    }
+
+    public static float getAvgAmpere() {
+        return AVG_AMPERE;
+    }
+
+    public static float getAvgPower() {
+        return AVG_POWER;
+    }
+
+    public static float getAvgVoltage() {
+        return AVG_VOLTAGE;
+    }
+
+    public static float getTotPower() {
+        return TOT_POWER;
+    }
+
+    public static void setAvgAmpere(float avgAmpere) {
+        AVG_AMPERE = avgAmpere;
+    }
+
+    public static void setAvgPower(float avgPower) {
+        AVG_POWER = avgPower;
+    }
+
+    public static void setAvgVoltage(float avgVoltage) {
+        AVG_VOLTAGE = avgVoltage;
+    }
+
+    public static void setTotPower(float totPower) {
+        TOT_POWER = totPower;
+    }
 }

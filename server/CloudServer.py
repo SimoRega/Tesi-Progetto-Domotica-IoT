@@ -6,6 +6,7 @@ import threading
 import datetime
 import requests
 import time
+import socket
 
 app = Flask(__name__)
 
@@ -54,6 +55,16 @@ def addDevice():
 @app.route("/appMeasure")
 def tmpMeasure():
    return energyStatusRequest()
+
+@app.route("/notification=<message>")
+def send_message(message):
+    # Connect to the server
+    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+        s.connect(("192.168.1.10", 8080))
+
+        # Send the message
+        s.sendall(message.encode())
+    return ""
    
 
 #---------------------------------------------------------------------------------------------------#
@@ -69,6 +80,8 @@ def energyStatusRequest():
             energy=requests.post("http://{}/cm".format(dev["devIp"]),params=payload).json()["StatusSNS"]
             dev["energy"]["measures"].append(energy)
             myHouseIstance.addPowerMeasure(energy)
+            if(energy["ENERGY"]["ApparentPower"]>11):
+               send_message("Controllare consumo {}@Il dispositivo ha raggiunto 1kW".format(dev["devName"]))
         return energy
     except requests.exceptions.RequestException as e:
        print(f"Request failed {e}")

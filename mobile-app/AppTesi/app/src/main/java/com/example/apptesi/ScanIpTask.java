@@ -1,8 +1,11 @@
 package com.example.apptesi;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.widget.ArrayAdapter;
+
+import com.example.apptesi.device.SmartDevice;
 
 import java.io.IOException;
 import java.net.InetAddress;
@@ -18,6 +21,7 @@ public class ScanIpTask extends AsyncTask<Void, String, Void> {
     static final int upper = 254;
     static final int timeout = 200;
     private Context ctx=null;
+    private DataSingleton ds = DataSingleton.getInstance();
 
     public ScanIpTask(Context ctx, ArrayList<String> ipList,ArrayAdapter<String> adapter){
         this.ctx=ctx;
@@ -45,6 +49,11 @@ public class ScanIpTask extends AsyncTask<Void, String, Void> {
                     String tmps=InetAddress.getByName(host).getHostName();
                     publishProgress(tmps.split(".homenet")[0]+
                             "\n "+ inetAddress);
+                    if(tmps.split(".homenet")[0].contains("DesktopSimo")){
+                        ds.setServer(new SmartDevice(tmps.split(".homenet")[0],inetAddress.getHostAddress(),"SERVER"));
+                        Intent intentNotifications = new Intent(ctx,MessageListenerService.class);
+                        ctx.startService(intentNotifications);
+                    }
                 }
 
             } catch (UnknownHostException e) {

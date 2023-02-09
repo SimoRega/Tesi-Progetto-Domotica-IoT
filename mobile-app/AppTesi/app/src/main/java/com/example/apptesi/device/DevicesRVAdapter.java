@@ -17,12 +17,12 @@ import java.util.Map;
 
 public class DevicesRVAdapter  extends RecyclerView.Adapter<DevicesRVAdapter.MyViewHolder> {
 
-    private List<Map.Entry<String,String>> devices;
+    private List<SmartDevice> devices;
     private Context context = null;
 
-    public DevicesRVAdapter(Context context, Map<String,String> devices){
+    public DevicesRVAdapter(Context context, List<SmartDevice> devices){
         this.context = context;
-        this.devices = new ArrayList<>(devices.entrySet());
+        this.devices = devices;
     }
 
     @NonNull
@@ -33,8 +33,7 @@ public class DevicesRVAdapter  extends RecyclerView.Adapter<DevicesRVAdapter.MyV
 
     @Override
     public void onBindViewHolder(@NonNull DevicesRVAdapter.MyViewHolder holder, int position) {
-        Map.Entry<String, String> entry = devices.get(position);
-        holder.bind(entry);
+        holder.bind(devices.get(position));
     }
 
     @Override
@@ -46,14 +45,16 @@ public class DevicesRVAdapter  extends RecyclerView.Adapter<DevicesRVAdapter.MyV
 
         private TextView txtName = this.itemView.findViewById(R.id.itemDevName);
         private TextView txtIP = this.itemView.findViewById(R.id.itemDevIP);
+        private TextView txtLabel = this.itemView.findViewById(R.id.itemDevLabel);
 
         public MyViewHolder(@NonNull View itemView) {
             super(itemView);
         }
 
-        public void bind(Map.Entry<String, String> s) {
-            txtName.setText(s.getKey());
-            txtIP.setText(s.getValue());
+        public void bind(SmartDevice s) {
+            txtName.setText(s.getName());
+            txtIP.setText(s.getIp());
+            txtLabel.setText(s.getLabel());
         }
     }
 }

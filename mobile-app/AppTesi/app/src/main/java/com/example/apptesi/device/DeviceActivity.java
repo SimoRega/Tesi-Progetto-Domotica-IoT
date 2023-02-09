@@ -47,7 +47,7 @@ public class DeviceActivity extends AppCompatActivity {
     private Button btnToggle;
     private Button btnChgLabel;
     private Activity act;
-
+    private LineChart lineChart;
     private SmartDevice smartDevice;
     private DataSingleton ds= DataSingleton.getInstance();
     private SmartDeviceViewModel smartDeviceViewModel;
@@ -74,7 +74,7 @@ public class DeviceActivity extends AppCompatActivity {
     }
 
     private void makeChart(){
-        LineChart lineChart = findViewById(R.id.graficoProva);
+        lineChart = findViewById(R.id.graficoProva);
 
 
         // Disable description text
@@ -92,7 +92,7 @@ public class DeviceActivity extends AppCompatActivity {
         lineChart.setPinchZoom(true);
 
         // Get the data from DataSingleton
-        List<JSONObject> measures = ds.getMeasures();
+        List<JSONObject> measures = ds.getMeasures(smartDevice);
         System.out.println(measures);
 
         // Add data to the line chart
@@ -159,8 +159,8 @@ public class DeviceActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        System.out.println(ds.getMeasures());
-        if(!ds.getMeasures().isEmpty()){
+        System.out.println(ds.getMeasures(smartDevice));
+        if(ds.getMeasures(smartDevice)!=null){
             makeChart();
         }
         txtIp = findViewById(R.id.txtIpDevice);
@@ -180,6 +180,8 @@ public class DeviceActivity extends AppCompatActivity {
         txtState.setText(smartDevice.getState()==true?"ON":"OFF");
         txtLabel.setText(smartDevice.getLabel());
 
+        initState();
+
         btnChgLabel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -192,29 +194,34 @@ public class DeviceActivity extends AppCompatActivity {
         btnToggle.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
                 new CustomHttpRequest(smartDevice).makeHttpRequest(HttpRequestType.TOGGLE);
                 smartDeviceViewModel.setInstance(smartDevice);
                 smartDeviceViewModel.txtState.postValue(smartDevice.getState() == true ? "ON" : "OFF");
                 imgState.setImageResource(smartDevice.getState()==true? R.drawable.on_dot:R.drawable.off_dot);
+
             }
         });
 
         btnInfo.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                new CustomHttpRequest(smartDevice).makeHttpRequest(HttpRequestType.STATE);
-                smartDeviceViewModel.setInstance(smartDevice);
-                smartDeviceViewModel.txtState.postValue(smartDevice.getState() == true ? "ON" : "OFF");
-                imgState.setImageResource(smartDevice.getState()==true? R.drawable.on_dot:R.drawable.off_dot);
-
+                initState();
             }
         });
 
         btnCmnd.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                new CustomHttpRequest("http://192.168.1.58:80/",List.of("energyDevice=",smartDevice.getName())).makeHttpRequest(HttpRequestType.SERVER);
+                new CustomHttpRequest("http://"+ds.getServer().getIp()+":80/",List.of("energyDevice=",smartDevice.getName())).makeHttpRequest(HttpRequestType.SERVER);
             }
         });
+    }
+
+    private void initState(){
+        new CustomHttpRequest(smartDevice).makeHttpRequest(HttpRequestType.STATE);
+        smartDeviceViewModel.setInstance(smartDevice);
+        smartDeviceViewModel.txtState.postValue(smartDevice.getState() == true ? "ON" : "OFF");
+        imgState.setImageResource(smartDevice.getState()==true? R.drawable.on_dot:R.drawable.off_dot);
     }
 }

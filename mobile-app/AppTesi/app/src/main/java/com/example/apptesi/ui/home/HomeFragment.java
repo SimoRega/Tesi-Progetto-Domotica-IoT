@@ -49,7 +49,7 @@ public class HomeFragment extends Fragment {
 
         recyclerView = view.findViewById(R.id.devicesRV);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-        DevicesRVAdapter a = new DevicesRVAdapter(getContext(),ds.getDevices());
+        DevicesRVAdapter a = new DevicesRVAdapter(getContext(),ds.getSmartDevices());
         recyclerView.setAdapter(a);
 
         recyclerView.addOnItemTouchListener(new CustomRVIListener(getActivity(), recyclerView, new CustomRVIListener.OnItemClickListener() {

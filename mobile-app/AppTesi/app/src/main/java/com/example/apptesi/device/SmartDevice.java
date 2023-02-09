@@ -1,5 +1,9 @@
 package com.example.apptesi.device;
 
+import androidx.annotation.NonNull;
+
+import org.json.JSONObject;
+
 public class SmartDevice {
 
     private String name;
@@ -8,6 +12,7 @@ public class SmartDevice {
     private String label;
     private boolean state = false;
     private String response = "";
+    private JSONObject energyData = new JSONObject();
     //TODO isON for sonoff
     //private boolean isOn = true;
 
@@ -76,5 +81,19 @@ public class SmartDevice {
 
     public String getLabel() {
         return label;
+    }
+
+    public void setEnergyData(JSONObject energyData) {
+        this.energyData = energyData;
+    }
+
+    public JSONObject getEnergyData() {
+        return energyData;
+    }
+
+    @NonNull
+    @Override
+    public String toString() {
+        return new StringBuilder().append("Name: ").append(name).append(" | IP: ").append(ip).append(" | Label: ").append(label).toString();
     }
 }

@@ -4,11 +4,14 @@ import android.app.Activity;
 import android.widget.Toast;
 
 import com.example.apptesi.device.SmartDevice;
+import com.github.mikephil.charting.data.Entry;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.text.DecimalFormat;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -68,6 +71,7 @@ public class CustomHttpRequest{
 
     private void makeServerRequest() {
         Thread tmpThread = new Thread(() -> {
+            SmartDevice tmpSD = smartDevice;
             StringBuilder par = new StringBuilder();
             for(String tmpS : params){
                 par.append(tmpS);
@@ -83,7 +87,31 @@ public class CustomHttpRequest{
                 public void onResponse(Call call, Response response) throws IOException {
                     if (response.isSuccessful()) {
                         if(params.contains("energyDevice=")){
-                            ds.setMeasures(response.body().string());
+                            String devName= params.get(1);
+                            String res = response.body().string();
+                            ds.setMeasures(devName,res);
+                            try {
+                                List<JSONObject> measures = ds.getMeasures(ds.getSmartDevice(devName));
+                                for (int i = 0; i < measures.size(); i++) {
+                                    JSONObject resJSON = measures.get(i);
+
+                                    float tmpAvgPower = ds.getAvgPower();
+                                    float tmpAvgVoltage = ds.getAvgVoltage();
+                                    float tmpAvgAmpere = ds.getAvgAmpere();
+                                    float tmpTotPower = ds.getTotPower();
+                                    int n = ds.getSmartDevices().size();
+                                    DecimalFormat df = new DecimalFormat("0.00");
+
+                                    ds.setAvgPower((tmpAvgPower + Float.parseFloat(resJSON.getJSONObject("ENERGY").getString("ApparentPower"))) / n);
+                                    ds.setAvgVoltage((tmpAvgVoltage + Float.parseFloat(resJSON.getJSONObject("ENERGY").getString("Voltage"))) / n);
+                                    ds.setAvgAmpere((tmpAvgAmpere + Float.parseFloat(resJSON.getJSONObject("ENERGY").getString("Current"))) / n);
+                                    ds.setTotPower((tmpTotPower + Float.parseFloat(resJSON.getJSONObject("ENERGY").getString("ApparentPower"))));
+
+                                    System.out.println("DATI "+ds.getAvgPower()+" "+ds.getAvgVoltage()+" "+ds.getAvgAmpere()+" "+ds.getTotPower());
+                                }
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
                         }
                     }
                 }
